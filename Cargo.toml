@@ -2,9 +2,12 @@
 name = "philiprehberger-clicolor"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.70"
 authors = ["Philip Rehberger"]
 description = "Cross-platform terminal color and style output with automatic capability detection"
 license = "MIT"
+readme = "README.md"
 repository = "https://github.com/philiprehberger/rs-clicolor"
+documentation = "https://docs.rs/philiprehberger-clicolor"
 keywords = ["color", "terminal", "ansi", "cli", "style"]
 categories = ["command-line-interface", "text-processing"]
