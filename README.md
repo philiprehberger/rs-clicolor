@@ -1,6 +1,10 @@
 # rs-clicolor
 
-Cross-platform terminal color and style output with automatic capability detection.
+[![CI](https://github.com/philiprehberger/rs-clicolor/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rs-clicolor/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/philiprehberger-clicolor.svg)](https://crates.io/crates/philiprehberger-clicolor)
+[![License](https://img.shields.io/github/license/philiprehberger/rs-clicolor)](LICENSE)
+
+Cross-platform terminal color and style output with automatic capability detection
 
 ## Installation
 
@@ -19,26 +23,6 @@ println!("{}", "Warning: check this".yellow());
 println!("{}", "Success!".green().on_black());
 ```
 
-### Reusable styles
-
-```rust
-use philiprehberger_clicolor::Style;
-
-let error = Style::new().red().bold();
-let info = Style::new().cyan();
-
-println!("{}", error.paint("Something failed"));
-println!("{}", info.paint("FYI"));
-```
-
-### Environment support
-
-Automatically respects:
-- `NO_COLOR` — disables all colors
-- `CLICOLOR=0` — disables colors
-- `CLICOLOR_FORCE` — forces colors even when not a TTY
-- Piped output — colors disabled when stdout is not a terminal
-
 ## API
 
 | Function / Type | Description |
@@ -47,6 +31,13 @@ Automatically respects:
 | `Style` | Reusable style builder |
 | `Color` | Color enum (16 colors + 256 + RGB) |
 | `strip_ansi(s)` | Remove ANSI escape codes from a string |
+
+## Development
+
+```bash
+cargo test
+cargo clippy -- -D warnings
+```
 
 ## License
 
