@@ -10,7 +10,7 @@ Cross-platform terminal color and style output with automatic capability detecti
 
 ```toml
 [dependencies]
-philiprehberger-clicolor = "0.1"
+philiprehberger-clicolor = "0.1.0"
 ```
 
 ## Usage
