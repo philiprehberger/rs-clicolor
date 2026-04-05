@@ -10,7 +10,7 @@ Cross-platform terminal color and style output with automatic capability detecti
 
 ```toml
 [dependencies]
-philiprehberger-clicolor = "0.1.1"
+philiprehberger-clicolor = "0.2.0"
 ```
 
 ## Usage
@@ -30,6 +30,8 @@ println!("{}", "Success!".green().on_black());
 | `Colorize` trait | Adds `.red()`, `.bold()`, etc. to `&str` |
 | `Style` | Reusable style builder |
 | `Color` | Color enum (16 colors + 256 + RGB) |
+| `gradient(text, from, to)` | Apply an RGB color gradient across characters |
+| `force_gradient(text, from, to)` | Same as `gradient`, ignoring color detection |
 | `strip_ansi(s)` | Remove ANSI escape codes from a string |
 
 ## Development

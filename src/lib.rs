@@ -852,6 +852,52 @@ fn enable_ansi_support() {
     }
 }
 
+/// Apply an RGB color gradient across characters of text.
+///
+/// Linearly interpolates between `from` and `to` RGB colors for each character.
+/// Single-character or empty strings use the `from` color. Respects `should_colorize()`.
+///
+/// ```rust
+/// use philiprehberger_clicolor::gradient;
+///
+/// let text = gradient("Hello!", (255, 0, 0), (0, 0, 255));
+/// ```
+pub fn gradient(text: &str, from: (u8, u8, u8), to: (u8, u8, u8)) -> String {
+    if !should_colorize() {
+        return text.to_string();
+    }
+    force_gradient(text, from, to)
+}
+
+/// Apply an RGB color gradient unconditionally, ignoring color detection.
+///
+/// ```rust
+/// use philiprehberger_clicolor::force_gradient;
+///
+/// let text = force_gradient("Hello!", (255, 0, 0), (0, 0, 255));
+/// assert!(text.contains("\x1b["));
+/// ```
+pub fn force_gradient(text: &str, from: (u8, u8, u8), to: (u8, u8, u8)) -> String {
+    let chars: Vec<char> = text.chars().collect();
+    if chars.is_empty() {
+        return String::new();
+    }
+
+    let len = chars.len();
+    let max_index = if len > 1 { len - 1 } else { 1 };
+    let mut result = String::with_capacity(len * 20);
+
+    for (i, ch) in chars.iter().enumerate() {
+        let t = i as f64 / max_index as f64;
+        let r = (from.0 as f64 + (to.0 as f64 - from.0 as f64) * t).round() as u8;
+        let g = (from.1 as f64 + (to.1 as f64 - from.1 as f64) * t).round() as u8;
+        let b = (from.2 as f64 + (to.2 as f64 - from.2 as f64) * t).round() as u8;
+        result.push_str(&format!("\x1b[38;2;{r};{g};{b}m{ch}"));
+    }
+    result.push_str("\x1b[0m");
+    result
+}
+
 /// Removes all ANSI escape sequences from a string.
 ///
 /// Handles `ESC[...m` style SGR sequences. Does not use regex.
@@ -1065,5 +1111,50 @@ mod tests {
         assert_eq!(s, "\x1b[3mfancy\x1b[0m");
         let s = "fancy".underline().force_styled();
         assert_eq!(s, "\x1b[4mfancy\x1b[0m");
+    }
+
+    #[test]
+    fn test_force_gradient_empty() {
+        assert_eq!(force_gradient("", (255, 0, 0), (0, 0, 255)), "");
+    }
+
+    #[test]
+    fn test_force_gradient_single_char() {
+        let result = force_gradient("A", (255, 0, 0), (0, 0, 255));
+        assert_eq!(result, "\x1b[38;2;255;0;0mA\x1b[0m");
+    }
+
+    #[test]
+    fn test_force_gradient_two_chars() {
+        let result = force_gradient("AB", (255, 0, 0), (0, 0, 255));
+        assert_eq!(
+            result,
+            "\x1b[38;2;255;0;0mA\x1b[38;2;0;0;255mB\x1b[0m"
+        );
+    }
+
+    #[test]
+    fn test_force_gradient_three_chars() {
+        let result = force_gradient("ABC", (0, 0, 0), (0, 0, 254));
+        // A at (0,0,0), B at (0,0,127), C at (0,0,254)
+        assert_eq!(
+            result,
+            "\x1b[38;2;0;0;0mA\x1b[38;2;0;0;127mB\x1b[38;2;0;0;254mC\x1b[0m"
+        );
+    }
+
+    #[test]
+    fn test_force_gradient_strip_roundtrip() {
+        let result = force_gradient("Hello", (255, 0, 0), (0, 0, 255));
+        assert_eq!(strip_ansi(&result), "Hello");
+    }
+
+    #[test]
+    fn test_force_gradient_same_color() {
+        let result = force_gradient("AB", (100, 100, 100), (100, 100, 100));
+        assert_eq!(
+            result,
+            "\x1b[38;2;100;100;100mA\x1b[38;2;100;100;100mB\x1b[0m"
+        );
     }
 }

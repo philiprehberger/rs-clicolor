@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.0] - 2026-04-05
+
+- Add `gradient()` and `force_gradient()` functions for RGB color gradients across text
+- Linearly interpolates R, G, B channels per character between two RGB colors
+
 ## 0.1.2 (2026-03-31)
 
 - Standardize README to 3-badge format with emoji Support section
